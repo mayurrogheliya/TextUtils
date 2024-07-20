@@ -43,7 +43,7 @@ function App() {
         <Navbar title="TextUtils" mode={darkMode} toggleMode={toggleMode} contactText="Contact Us" />
         <Alert alert={alert} />
         <Routes>
-          <Route exact path="/" element={<TextForm heading="Use our TextUtils" mode={darkMode} showAlert={showAlert} />} />
+          <Route exact path="/TextUtils" element={<TextForm heading="Use our TextUtils" mode={darkMode} showAlert={showAlert} />} />
           <Route exact path="/about" element={<About mode={darkMode} />} />
         </Routes>
       </Router>
