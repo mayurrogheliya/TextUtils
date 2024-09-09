@@ -6,6 +6,7 @@ import About from './components/About';
 import Alert from './components/Alert';
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import PageNotFound from './components/PageNotFound';
 
 function App() {
 
@@ -43,8 +44,10 @@ function App() {
         <Navbar title="TextUtils" mode={darkMode} toggleMode={toggleMode} contactText="Contact Us" />
         <Alert alert={alert} />
         <Routes>
-          <Route exact path="/" element={<TextForm heading="Use our TextUtils" mode={darkMode} showAlert={showAlert} />} />
-          <Route exact path="/about" element={<About mode={darkMode} />} />
+          <Route path="/" element={<TextForm heading="Use our TextUtils" mode={darkMode} showAlert={showAlert} />} />
+          <Route path="/about" element={<About mode={darkMode} />} />
+          {/* 404 Page Not Found Route */}
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Router>
     </>
