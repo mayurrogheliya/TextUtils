@@ -1,8 +1,13 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlay, faPause } from '@fortawesome/free-solid-svg-icons';
+
 
 const TextForm = (props) => {
 
     const [text, setText] = useState("");
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [voice, setVoice] = useState(null);
 
     const handleOnClick = () => {
         let newText = text.toUpperCase();
@@ -41,12 +46,53 @@ const TextForm = (props) => {
     }
 
     const handleOnChange = (event) => {
-        setText(event.target.value)
+        const newText = event.target.value
+        setText(newText)
+
+        if (newText.length === 0) {
+            window.speechSynthesis.cancel();
+            setIsPlaying(false);
+        }
+    }
+
+    // handle the voice
+    useEffect(() => {
+        const loadvoice = () => {
+            const voices = window.speechSynthesis.getVoices();
+            const selectVoice = voices.find((v) => v.name === "Samantha");
+            if (selectVoice) {
+                setVoice(selectVoice);
+            }
+        }
+        loadvoice();
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = loadvoice();
+        }
+        return () => {
+            window.speechSynthesis.cancel();
+        }
+    }, []);
+
+    const handlePlayPauseClick = () => {
+        if (isPlaying) {
+            window.speechSynthesis.cancel(); // Stops the speech if it's already playing
+        } else {
+            let speech = new SpeechSynthesisUtterance();
+            speech.text = text;
+            if (voice) {
+                speech.voice = voice
+            }
+            speech.onend = () => {
+                setIsPlaying(false);
+            }
+            window.speechSynthesis.speak(speech);
+        }
+        setIsPlaying(!isPlaying); // Toggle the state after the action is performed
     }
 
     return (
         <>
-            
+
             <div className="container my-3">
                 <h1>{props.heading}</h1>
                 <div className="mb-3">
@@ -56,6 +102,19 @@ const TextForm = (props) => {
                 <button disabled={text.length === 0} className="btn btn-primary mx-2 my-2" onClick={handleLowClick}>Convert to LowerCase</button>
                 <button disabled={text.length === 0} className="btn btn-primary mx-2 my-2" onClick={handleCapitalClick}>Capitalized Text</button>
                 <button disabled={text.length === 0} className="btn btn-primary mx-2 my-2" onClick={handleSpaceClick}>Remove Extra Space</button>
+                <button disabled={text.length === 0} className="btn btn-primary mx-2 my-2" onClick={handlePlayPauseClick}>
+                    {
+                        isPlaying ? (
+                            <>
+                                Stop <FontAwesomeIcon icon={faPause} />
+                            </>
+                        ) : (
+                            <>
+                                Listen <FontAwesomeIcon icon={faPlay} />
+                            </>
+                        )
+                    }
+                </button>
                 <button disabled={text.length === 0} className="btn btn-primary mx-2 my-2" onClick={handleCopyClick}>Copy Text</button>
                 <button disabled={text.length === 0} className="btn btn-primary mx-2 my-2" onClick={handleClearClick}>Clear Text</button>
             </div>
